@@ -1,0 +1,30 @@
+the-codebase-in-one-file.txt
+
+# Ignore build artifacts
+*.bin
+*.o
+*.elf
+*.iso
+*.img
+
+# Ignore QEMU logs or dumps
+*.log
+*.dmp
+
+# Ignore backup files
+*~
+*.bak
+
+# Ignore Windows batch file generated output (if any)
+os-image.*
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore VSCode settings if you're using it
+.vscode/
+
+# Optional: Ignore compiler/intermediate folders if used
+build/
+out/
