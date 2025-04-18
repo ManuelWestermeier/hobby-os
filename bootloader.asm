@@ -2,8 +2,8 @@
 ; bootloader.asm  (512 Bytes, letzter Wert 0xAA55)
 ; ------------------------------------------------------------------
 
-org 0x7C00
 bits 16
+org 0x7C00
 
 start:
     cli

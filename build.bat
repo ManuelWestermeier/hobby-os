@@ -1,20 +1,28 @@
 @echo off
-REM Pfad zu MSYS2 MinGW‑32‑bit (ggf. anpassen)
-set PATH=C:\msys64\mingw32\bin;%PATH%
+set NASM=nasm.exe
+set CC=i686-elf-gcc.exe
+set LD=i686-elf-ld.exe
+set OBJCOPY=i686-elf-objcopy.exe
+set QEMU=qemu-system-i386.exe
 
-REM 1) Bootloader assemblieren (binär, 512 Bytes)
-nasm -f bin bootloader.asm -o bootloader.bin
+rem 1) Assemble bootloader (as flat binary!)
+%NASM% -f bin -o bootloader.bin bootloader.asm
+if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
-REM 2) C‑Quellcode kompilieren (kernel + stdlib)
-gcc -m32 -ffreestanding -c kernel.c  -o kernel.o
-gcc -m32 -ffreestanding -c stdlib.c  -o stdlib.o
+rem 2) Compile kernel to object
+%CC% -ffreestanding -m32 -c kernel.c -o kernel.o
+if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
-REM 3) Linken in eine flache Binär-Datei bei 0x1000
-ld -m elf_i386 -T linker.ld --oformat binary \
-    kernel.o stdlib.o -o kernel.bin
+rem 3) Link kernel to flat binary
+%LD% -m elf_i386 -T linker.ld -o kernel.elf kernel.o
+if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
-REM 4) Image zusammenfügen
-copy /b bootloader.bin+kernel.bin os-image.bin >nul
+rem 4) Extract kernel binary
+%OBJCOPY% -O binary kernel.elf kernel.bin
+if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
-REM 5) Image in QEMU starten
-qemu-system-i386 -drive format=raw,file=os-image.bin -serial stdio
+rem 5) Concatenate bootloader + kernel
+copy /b bootloader.bin + kernel.bin os-image.bin > nul
+
+rem 6) Run in QEMU
+%QEMU% -drive format=raw,file=os-image.bin
