@@ -3,7 +3,7 @@
 ; ------------------------------------------------------------------
 
 bits 16
-org 0x7C00
+org 0x7E00
 
 start:
     cli
@@ -11,7 +11,7 @@ start:
     mov ds, ax
     mov es, ax
     mov ss, ax
-    mov sp, 0x7C00
+    mov sp, 0x7E00
     sti
 
     ; GDT aufbauen und laden

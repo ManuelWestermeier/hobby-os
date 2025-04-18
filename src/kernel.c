@@ -13,6 +13,9 @@ void kernel_main(void)
     puts_graphic("Grafikmodus aktiv!\n", 20, 50, 15);
 
     while (1)
+        ;
+
+    while (1)
     {
         char c = getkey();
         if (c == 't')
