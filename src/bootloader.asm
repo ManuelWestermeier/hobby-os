@@ -55,8 +55,8 @@ pm_entry:
     mov ss, ax
     mov esp, 0x90000
 
-    ; Direkt zu Kernel springen (laut linker.ld bei 0x1000)
-    jmp 0x1000
+    ; Direkt zu Kernel springen (laut linker.ld bei 0x7E00)
+    jmp CODE_SEG:0x7E00
 
 halt:
     cli
