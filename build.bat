@@ -1,7 +1,6 @@
 @echo off
 set NASM=nasm.exe
 set CC=i686-elf-gcc.exe
-@REM set CC=i686-w64-mingw32-gcc.exe
 set LD=i686-elf-ld.exe
 set OBJCOPY=i686-elf-objcopy.exe
 set QEMU=qemu-system-i386.exe
@@ -10,12 +9,14 @@ rem 1) Assemble bootloader (as flat binary!)
 %NASM% -f bin -o bootloader.bin bootloader.asm
 if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
-rem 2) Compile kernel to object
+rem 2) Compile sources to object files
 %CC% -ffreestanding -m32 -c kernel.c -o kernel.o
 if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
+%CC% -ffreestanding -m32 -c stdlib.c -o stdlib.o
+if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
-rem 3) Link kernel to flat binary
-%LD% -m elf_i386 -T linker.ld -o kernel.elf kernel.o
+rem 3) Link kernel + stdlib
+%LD% -m elf_i386 -T linker.ld -o kernel.elf kernel.o stdlib.o
 if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
 rem 4) Extract kernel binary
