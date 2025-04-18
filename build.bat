@@ -5,26 +5,29 @@ set LD=i686-elf-ld.exe
 set OBJCOPY=i686-elf-objcopy.exe
 set QEMU=qemu-system-i386.exe
 
+mkdir build >nul 2>nul
+
 rem 1) Assemble bootloader (as flat binary!)
-%NASM% -f bin -o bootloader.bin bootloader.asm
+%NASM% -f bin -o build/bootloader.bin src/bootloader.asm
 if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
-rem 2) Compile sources to object files
-%CC% -ffreestanding -m32 -c kernel.c -o kernel.o
-if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
-%CC% -ffreestanding -m32 -c stdlib.c -o stdlib.o
+rem 2) Compile kernel and stdlib to object files
+%CC% -ffreestanding -m32 -c src/stdlib.c -o build/stdlib.o
 if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
-rem 3) Link kernel + stdlib
-%LD% -m elf_i386 -T linker.ld -o kernel.elf kernel.o stdlib.o
+%CC% -ffreestanding -m32 -c src/kernel.c -o build/kernel.o
 if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
-rem 4) Extract kernel binary
-%OBJCOPY% -O binary kernel.elf kernel.bin
+rem 3) Link kernel to ELF
+%LD% -m elf_i386 -T src/linker.ld -o build/kernel.elf build/kernel.o build/stdlib.o
 if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
-rem 5) Concatenate bootloader + kernel
-copy /b bootloader.bin + kernel.bin os-image.bin > nul
+rem 4) Extract flat kernel binary
+%OBJCOPY% -O binary build/kernel.elf build/kernel.bin
+if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
+
+rem 5) Concatenate bootloader and kernel
+copy /b build/bootloader.bin + build/kernel.bin build/os-image.bin > nul
 
 rem 6) Run in QEMU
-%QEMU% -drive format=raw,file=os-image.bin
+%QEMU% -drive format=raw,file=build/os-image.bin
