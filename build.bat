@@ -8,18 +8,18 @@ set QEMU=qemu-system-i386.exe
 mkdir build >nul 2>nul
 
 rem 1) Assemble bootloader (as flat binary!)
-%NASM% -f bin -o build/bootloader.bin src/bootloader.asm
+%NASM% -f bin -o build/bootloader.bin src/bootloader/bootloader.asm
 if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
 rem 2) Compile kernel and stdlib to object files
-%CC% -ffreestanding -m32 -c src/stdlib.c -o build/stdlib.o
+%CC% -ffreestanding -m32 -c src/lib/std/stdlib.c -o build/stdlib.o
 if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
-%CC% -ffreestanding -m32 -c src/kernel.c -o build/kernel.o
+%CC% -ffreestanding -m32 -c src/kernel/kernel.c -o build/kernel.o
 if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
 rem 3) Link kernel to ELF
-%LD% -m elf_i386 -T src/linker.ld -o build/kernel.elf build/kernel.o build/stdlib.o
+%LD% -m elf_i386 -T linker.ld -o build/kernel.elf build/kernel.o build/stdlib.o
 if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
 rem 4) Extract flat kernel binary

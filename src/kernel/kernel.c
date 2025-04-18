@@ -1,4 +1,4 @@
-#include "stdlib.h"
+#include "../lib/std/stdlib.h"
 
 void kernel_main(void)
 {
