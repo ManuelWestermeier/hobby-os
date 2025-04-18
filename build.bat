@@ -1,6 +1,7 @@
 @echo off
 set NASM=nasm.exe
 set CC=i686-elf-gcc.exe
+@REM set CC=i686-w64-mingw32-gcc.exe
 set LD=i686-elf-ld.exe
 set OBJCOPY=i686-elf-objcopy.exe
 set QEMU=qemu-system-i386.exe

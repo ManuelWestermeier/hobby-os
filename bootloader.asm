@@ -22,6 +22,7 @@ start:
     or  eax, 1
     mov  cr0, eax
 
+    ; Far jump zu Protected Mode Code
     jmp CODE_SEG:pm_entry
 
 ; ------------------------------------------------------------------
@@ -48,15 +49,14 @@ DATA_SEG equ gdt_data - gdt_start
 ; ------------------------------------------------------------------
 bits 32
 pm_entry:
-    ; Segmente nachziehen
+    ; Segmente setzen
     mov ax, DATA_SEG
     mov ds, ax
     mov ss, ax
     mov esp, 0x90000
 
-    ; Kernel aufrufen
-    extern kernel_main
-    call kernel_main
+    ; Direkt zu Kernel springen (laut linker.ld bei 0x1000)
+    jmp 0x1000
 
 halt:
     cli
